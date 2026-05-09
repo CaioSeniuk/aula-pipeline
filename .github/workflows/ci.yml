@@ -15,12 +15,12 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Verificar qualidade
-        run: npx eslint .
-          
       - name: Instalar dependências
         run: npm install
         
+      - name: Verificar qualidade
+        run: npx eslint . 
+   
       - name: Rodar testes
         run: npm test
       
