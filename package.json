@@ -10,6 +10,8 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "eslint": "^10.3.0",
+    "eslint-plugin-react": "^7.37.5",
     "jest": "^30.4.2"
   }
 }
