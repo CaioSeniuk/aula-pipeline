@@ -7,6 +7,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      SONAR_PROJECT_KEY: CaioSeniuk_aula-pipeline
+      SONAR_ORGANIZATION: caioseniuk
     steps:
       - name: Clonar o repositório
         uses: actions/checkout@v4
@@ -23,9 +26,9 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          cat > sonar-project.properties <<'EOF'
-          sonar.projectKey=CaioSeniuk_aula-pipeline
-          sonar.organization=caioseniuk
+          cat > sonar-project.properties <<EOF
+          sonar.projectKey=${SONAR_PROJECT_KEY}
+          sonar.organization=${SONAR_ORGANIZATION}
           sonar.sources=.
           sonar.tests=.
           sonar.javascript.lcov.reportPaths=coverage/lcov.info
@@ -53,7 +56,7 @@ jobs:
           sudo apt-get update && sudo apt-get install -y jq >/dev/null
           echo "Polling SonarCloud for Quality Gate (timeout 5m)..."
           for i in {1..30}; do
-            status=$(curl -s -u $SONAR_TOKEN: "https://sonarcloud.io/api/qualitygates/project_status?projectKey=CaioSeniuk_aula-pipeline" | jq -r .projectStatus.status)
+            status=$(curl -s -u $SONAR_TOKEN: "https://sonarcloud.io/api/qualitygates/project_status?projectKey=${SONAR_PROJECT_KEY}" | jq -r .projectStatus.status)
             echo "Quality Gate status: $status"
             if [ "$status" != "IN_PROGRESS" ]; then break; fi
             sleep 10
