@@ -40,25 +40,9 @@ jobs:
       - name: Run tests with coverage
         run: npm test -- --coverage
 
-      - name: Install SonarScanner CLI
-        run: npm install -g sonar-scanner
-
-      - name: SonarCloud — Analyze
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: sonar-scanner -Dsonar.login=$SONAR_TOKEN -Dsonar.host.url=https://sonarcloud.io
-
-      - name: SonarCloud — Publish (wait Quality Gate)
-        shell: bash
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          sudo apt-get update && sudo apt-get install -y jq >/dev/null
-          echo "Polling SonarCloud for Quality Gate (timeout 5m)..."
-          for i in {1..30}; do
-            status=$(curl -s -u $SONAR_TOKEN: "https://sonarcloud.io/api/qualitygates/project_status?projectKey=${SONAR_PROJECT_KEY}" | jq -r .projectStatus.status)
-            echo "Quality Gate status: $status"
-            if [ "$status" != "IN_PROGRESS" ]; then break; fi
-            sleep 10
-          done
-          if [ "$status" != "OK" ]; then echo "Quality gate failed: $status"; exit 1; fi
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@v1
+        with:
+          organization: ${{ env.SONAR_ORGANIZATION }}
+          token: ${{ secrets.SONAR_TOKEN }}
+          projectKey: ${{ env.SONAR_PROJECT_KEY }}
